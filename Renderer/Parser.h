@@ -1,5 +1,6 @@
 #pragma once
 #include "Face.h"
+#include <string>
 class Parser
 {
 public:

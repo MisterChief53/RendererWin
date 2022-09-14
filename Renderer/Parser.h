@@ -4,6 +4,6 @@
 class Parser
 {
 public:
-	void parse(std::vector<Face> faces, std::string path);
+	static void parse(std::vector<Face>& faces, std::string path);
 };
 

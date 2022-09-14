@@ -3,6 +3,9 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <vector>
+
+#include "Parser.h"
 
 void display(void)
 {
@@ -55,6 +58,8 @@ void init(void)
  */
 int main(int argc, char** argv)
 {
+	/*
+	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
 	glutInitWindowSize(800, 600);
@@ -63,6 +68,34 @@ int main(int argc, char** argv)
 	init();
 	glutDisplayFunc(display);
 	glutMainLoop();
+	*/
+
+	std::vector<Face> faces;
+	std::string path = "C:\\Users\\soder\\OneDrive\\Programming\\prop.obj";
+
+	Parser::parse(faces, path);
+
+	for (int i = 0; i < faces.size(); i++) {
+		std::vector <Vertex> normals = faces[i].getNormals();
+		std::vector <Vertex> vertices = faces[i].getVertices();
+
+		std::cout << "Face " << i << ":" << std::endl;
+
+		std::cout << "\t" << "Vertices:" << std::endl;
+		for (int j = 0; j < vertices.size(); j++) {
+			std::cout << "\t" << vertices[j].getX() << " " << vertices[j].getY() << " " << vertices[j].getZ();
+		}
+		std::cout << std::endl;
+
+		std::cout << "\t" << "Normals:" << std::endl;
+		for (int j = 0; j < normals.size(); j++) {
+			std::cout << "\t" << normals[j].getX() << " " << normals[j].getY() << " " << normals[j].getZ();
+		}
+		std::cout << std::endl;
+
+	}
+
+	std::cout << "hello" << std::endl;
 
 	return 0;   /* ISO C requires main to return int. */
 }

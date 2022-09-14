@@ -11,3 +11,16 @@ void Vertex::setY(float newY) {
 void Vertex::setZ(float newZ) {
 	z = newZ;
 }
+
+
+float Vertex::getX() {
+	return x;
+}
+
+float Vertex::getY() {
+	return y;
+}
+
+float Vertex::getZ() {
+	return z;
+}

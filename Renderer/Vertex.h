@@ -7,5 +7,9 @@ public:
 	void setX(float newX);
 	void setY(float newY);
 	void setZ(float newZ);
+
+	float getX();
+	float getY();
+	float getZ();
 };
 

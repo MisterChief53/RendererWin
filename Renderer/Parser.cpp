@@ -36,8 +36,6 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 			float x, y, z;
 			Vertex vertex;
 
-			buffer.erase(0, 2);
-
 			std::stringstream ss(buffer);
 
 			ss >> x;
@@ -56,7 +54,7 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 			std::vector<Vertex> faceVertices;
 			std::vector<Vertex> faceNormals;
 
-			//This assumes all faces are quads!
+			//This assumes all faces are triangulated!
 			for (int i = 0; i < buffer.size(); i++) {
 				if (buffer[i] == '/') {//Replace /'s with spaces
 					buffer[i] = ' ';
@@ -66,7 +64,7 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 			std::stringstream ss(buffer);
 			int vertexIndex, uvIndex, normalIndex;
 
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 3; i++) {
 				ss >> vertexIndex;
 				ss >> uvIndex;
 				ss >> normalIndex;

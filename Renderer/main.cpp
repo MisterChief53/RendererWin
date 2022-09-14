@@ -1,8 +1,8 @@
 #include "GL\glew.h"
 #include "GL\glut.h" //o glut
 #include <iostream>
-#include <stdio.h>
-#include <stdlib.h>
+#include <cstdio>
+#include <cstdlib>
 #include <vector>
 
 #include "Parser.h"
@@ -12,19 +12,57 @@ void display(void)
 	/*  clear all pixels  */
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	/*  draw white polygon (rectangle) with corners at
-	 *  (0.25, 0.25, 0.0) and (0.75, 0.75, 0.0)
-	 */
-
 	glColor3f(1.0, 1.0, 1.0);
-
+	/*
 	glBegin(GL_TRIANGLES);
 	glVertex3f(0.25, 0.25, 5.0);
 	glVertex3f(0.75, 0.25, 5.0);
 	glVertex3f(0.75, 0.75, 5.0);
 	//glVertex3f(0.25, 0.75, 0.0);		
 	glEnd();
+	*/
+	
+	/*
+	std::vector<float> cubeVertices{-1,1,10,	2,2,11,		1,1,10,
+									2,2,11,		0,0,11,		2,0,11,
+									0,2,11,		-1,-1,10,	0,0,11,
+									1,-1,10,	0,0,11,		-1,-1,10,
+									1,1,10,		2,0,11,		1,-1,10,
+									-1,1,10,	1,-1,10,	-1,-1,10,
+									-1,1,10,	0,2,11,		2,2,11,
+									2,2,11,		0,2,11,		0,0,11,
+									0,2,11,		-1,1,10,	-1,-1,10,
+									1,-1,10,	2,0,11,		0,0,11,
+									1,1,10,		2,2,11,		2,0,11,
+									-1,1,10,	1,1,10,		1,-1,10,
+									};
 
+	int pos = 0;
+	glBegin(GL_TRIANGLES);
+	for (int i = 0; i < cubeVertices.size()/9; i++) {
+		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
+		pos += 3;
+		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
+		pos += 3;
+		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
+		pos += 3;
+	}
+	glEnd();
+	*/
+
+	std::vector<Face> faces;
+	std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\cube.obj";
+
+	Parser::parse(faces, path);
+
+	glBegin(GL_TRIANGLES);
+	for (int i = 0; i < faces.size(); i++) {
+		std::vector <Vertex> vertices = faces[i].getVertices();
+		for (int j = 0; j < 3; j++) {
+			glVertex3f(vertices[j].getX(), vertices[j].getY(), vertices[j].getZ());
+		}
+	}
+	glEnd();
 
 	glFlush();
 }
@@ -46,7 +84,7 @@ void init(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(0.0, 2.0, 0.0, 0.0, 0.0, 10.0, 0.0, 1.0, 0.0);
+	gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 20.0, 0.0, 1.0, 0.0);
 }
 
 /*
@@ -58,7 +96,7 @@ void init(void)
  */
 int main(int argc, char** argv)
 {
-	/*
+	
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
@@ -68,13 +106,13 @@ int main(int argc, char** argv)
 	init();
 	glutDisplayFunc(display);
 	glutMainLoop();
-	*/
-
+	
+	/*
 	std::vector<Face> faces;
-	std::string path = "C:\\Users\\soder\\OneDrive\\Programming\\prop.obj";
+	std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\cube.obj";
 
 	Parser::parse(faces, path);
-
+	
 	for (int i = 0; i < faces.size(); i++) {
 		std::vector <Vertex> normals = faces[i].getNormals();
 		std::vector <Vertex> vertices = faces[i].getVertices();
@@ -94,8 +132,10 @@ int main(int argc, char** argv)
 		std::cout << std::endl;
 
 	}
+	*/
 
 	std::cout << "hello" << std::endl;
+	
 
 	return 0;   /* ISO C requires main to return int. */
 }

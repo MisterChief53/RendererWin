@@ -4,66 +4,42 @@
 #include <cstdio>
 #include <cstdlib>
 #include <vector>
+#include <random>
 
 #include "Parser.h"
 
+std::vector<Face> faces;
+std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\chango.obj";
+
+
+float grados = 0;
 void display(void)
 {
 	/*  clear all pixels  */
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glColor3f(1.0, 1.0, 1.0);
-	/*
-	glBegin(GL_TRIANGLES);
-	glVertex3f(0.25, 0.25, 5.0);
-	glVertex3f(0.75, 0.25, 5.0);
-	glVertex3f(0.75, 0.75, 5.0);
-	//glVertex3f(0.25, 0.75, 0.0);		
-	glEnd();
-	*/
-	
-	/*
-	std::vector<float> cubeVertices{-1,1,10,	2,2,11,		1,1,10,
-									2,2,11,		0,0,11,		2,0,11,
-									0,2,11,		-1,-1,10,	0,0,11,
-									1,-1,10,	0,0,11,		-1,-1,10,
-									1,1,10,		2,0,11,		1,-1,10,
-									-1,1,10,	1,-1,10,	-1,-1,10,
-									-1,1,10,	0,2,11,		2,2,11,
-									2,2,11,		0,2,11,		0,0,11,
-									0,2,11,		-1,1,10,	-1,-1,10,
-									1,-1,10,	2,0,11,		0,0,11,
-									1,1,10,		2,2,11,		2,0,11,
-									-1,1,10,	1,1,10,		1,-1,10,
-									};
-
-	int pos = 0;
-	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < cubeVertices.size()/9; i++) {
-		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
-		pos += 3;
-		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
-		pos += 3;
-		glVertex3f(cubeVertices[pos], cubeVertices[pos + 1], cubeVertices[pos + 2]);
-		pos += 3;
-	}
-	glEnd();
-	*/
-
-	std::vector<Face> faces;
-	std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\cube.obj";
-
-	Parser::parse(faces, path);
+	glRotatef(grados, 1, 1, 1);
 
 	glBegin(GL_TRIANGLES);
 	for (int i = 0; i < faces.size(); i++) {
 		std::vector <Vertex> vertices = faces[i].getVertices();
+
+		std::random_device rd;
+		std::mt19937 mt(rd());
+		std::uniform_int_distribution<int> dist(100, 255);
+		glColor3ub(dist(mt), dist(mt), dist(mt));
+
 		for (int j = 0; j < 3; j++) {
 			glVertex3f(vertices[j].getX(), vertices[j].getY(), vertices[j].getZ());
 		}
 	}
 	glEnd();
 
+	grados += 0.0002;
+	if (grados > 360) { grados = 0; }
+
+	glutSwapBuffers();
 	glFlush();
 }
 
@@ -96,43 +72,31 @@ void init(void)
  */
 int main(int argc, char** argv)
 {
-	
+	Parser::parse(faces, path);
 	
 	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowSize(800, 600);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("hello");
 	init();
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
 	glutDisplayFunc(display);
+	glutIdleFunc(display);
 	glutMainLoop();
 	
-	/*
-	std::vector<Face> faces;
-	std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\cube.obj";
 
-	Parser::parse(faces, path);
-	
 	for (int i = 0; i < faces.size(); i++) {
-		std::vector <Vertex> normals = faces[i].getNormals();
 		std::vector <Vertex> vertices = faces[i].getVertices();
-
-		std::cout << "Face " << i << ":" << std::endl;
-
-		std::cout << "\t" << "Vertices:" << std::endl;
-		for (int j = 0; j < vertices.size(); j++) {
-			std::cout << "\t" << vertices[j].getX() << " " << vertices[j].getY() << " " << vertices[j].getZ();
+		std::cout << "Face: " << i + 1 << " Vertex: ";
+		for (int j = 0; j < 3; j++) {
+			std::cout << vertices[j].getX() << " " << vertices[j].getY() << " " << vertices[j].getZ() << " ";
 		}
 		std::cout << std::endl;
-
-		std::cout << "\t" << "Normals:" << std::endl;
-		for (int j = 0; j < normals.size(); j++) {
-			std::cout << "\t" << normals[j].getX() << " " << normals[j].getY() << " " << normals[j].getZ();
-		}
-		std::cout << std::endl;
-
 	}
-	*/
+
+	
 
 	std::cout << "hello" << std::endl;
 	

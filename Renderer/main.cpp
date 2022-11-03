@@ -23,7 +23,7 @@ void display(void)
 
 	glBegin(GL_TRIANGLES);
 	for (int i = 0; i < faces.size(); i++) {
-		std::vector <Vertex> vertices = faces[i].getVertices();
+		std::vector <Vertex> vertices = faces[i].vertices;
 
 		std::random_device rd;
 		std::mt19937 mt(rd());
@@ -31,18 +31,34 @@ void display(void)
 		glColor3ub(dist(mt), dist(mt), dist(mt));
 
 		for (int j = 0; j < 3; j++) {
-			glVertex3f(vertices[j].getX(), vertices[j].getY(), vertices[j].getZ());
+			glVertex3f(vertices[j].x, vertices[j].y, vertices[j].z);
 		}
 	}
 	glEnd();
 
-	grados += 0.0002;
+	grados += 0.02;
+	//t += 0.00001f;
 	if (grados > 360) { grados = 0; }
 
 	glutSwapBuffers();
 	glFlush();
 }
 
+/*
+
+void bezier() {
+	int p1, p2, p3, p4;//En realidad estos solo son los puntos que tenemos, los podemos poner globales
+	float nx, ny, nz;
+	float t = 0.0f;
+
+	nx = pow((t - 1), 2) * p1.x + 3 * (1 - t) * p2.x) + termino + termino; En realidad ponemos la ecuacion real aqui
+	/*ny = pow((t - 1), 2) * p1.y + 3 * (1 - t) * p2.y) + termino + termino;En realidad ponemos la ecuacion real aqui
+	/*nz = pow((t - 1), 2) * p1.z + 3 * (1 - t) * p2.z)+ termino + termino;En realidad ponemos la ecuacion real aqui
+
+	//luego regresamos y etc.  El punto es calcular cada punto de los que generan la curva de bezier. 
+	//Luego con estos puntos usamos una matriz de traslacion para transladar los puntos a donde dice bezier
+}
+*/
 void init(void)
 {
 	/*  select clearing (background) color       */
@@ -88,10 +104,10 @@ int main(int argc, char** argv)
 	
 
 	for (int i = 0; i < faces.size(); i++) {
-		std::vector <Vertex> vertices = faces[i].getVertices();
+		std::vector <Vertex> vertices = faces[i].vertices;
 		std::cout << "Face: " << i + 1 << " Vertex: ";
 		for (int j = 0; j < 3; j++) {
-			std::cout << vertices[j].getX() << " " << vertices[j].getY() << " " << vertices[j].getZ() << " ";
+			std::cout << vertices[j].x << " " << vertices[j].y << " " << vertices[j].z << " ";
 		}
 		std::cout << std::endl;
 	}

@@ -25,9 +25,9 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 			ss >> y;
 			ss >> z;
 
-			vertex.setX(x);
-			vertex.setY(y);
-			vertex.setZ(z);
+			vertex.x = x;
+			vertex.y = y;
+			vertex.z = z;
 			normals.push_back(vertex);
 		}
 		else if (buffer[0] == 'v') {//Is a vertex
@@ -42,9 +42,9 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 			ss >> y;
 			ss >> z;
 
-			vertex.setX(x);
-			vertex.setY(y);
-			vertex.setZ(z);
+			vertex.x = x;
+			vertex.y = y;
+			vertex.z = z;
 			vertices.push_back(vertex);
 		}
 		else if (buffer[0] == 'f') {//Is a face
@@ -73,8 +73,8 @@ void Parser::parse(std::vector<Face>& faces, std::string path) {
 				faceNormals.push_back(normals[normalIndex - 1]);
 			}
 
-			face.setNormals(faceNormals);
-			face.setVertices(faceVertices);
+			face.normals = faceNormals;
+			face.vertices = faceVertices;
 
 			faces.push_back(face);
 

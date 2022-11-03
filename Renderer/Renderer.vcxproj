@@ -135,11 +135,13 @@
   <ItemGroup>
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Parser.cpp" />
     <ClCompile Include="Vertex.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Face.h" />
+    <ClInclude Include="Mesh.h" />
     <ClInclude Include="Parser.h" />
     <ClInclude Include="Vertex.h" />
   </ItemGroup>

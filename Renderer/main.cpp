@@ -7,10 +7,10 @@
 #include <random>
 
 #include "Parser.h"
-
+#include "Mesh.h"
 std::vector<Face> faces;
 std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\chango.obj";
-
+std::vector<Mesh> meshes(2);
 
 float grados = 0;
 void display(void)
@@ -19,11 +19,24 @@ void display(void)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glColor3f(1.0, 1.0, 1.0);
-	glRotatef(grados, 1, 1, 1);
+	//glRotatef(grados, 1, 1, 1);
 
 	glBegin(GL_TRIANGLES);
-	for (int i = 0; i < faces.size(); i++) {
-		std::vector <Vertex> vertices = faces[i].vertices;
+	for (int i = 0; i < meshes[0].faces.size(); i++) {
+		std::vector <Vertex> vertices = meshes[0].faces[i].vertices;
+
+		std::random_device rd;
+		std::mt19937 mt(rd());
+		std::uniform_int_distribution<int> dist(100, 255);
+		glColor3ub(dist(mt), dist(mt), dist(mt));
+
+		for (int j = 0; j < 3; j++) {
+			glVertex3f(vertices[j].x, vertices[j].y, vertices[j].z);
+		}
+	}
+
+	for (int i = 0; i < meshes[1].faces.size(); i++) {
+		std::vector <Vertex> vertices = meshes[1].faces[i].vertices;
 
 		std::random_device rd;
 		std::mt19937 mt(rd());
@@ -36,9 +49,9 @@ void display(void)
 	}
 	glEnd();
 
-	grados += 0.02;
+	//grados += 0.02;
 	//t += 0.00001f;
-	if (grados > 360) { grados = 0; }
+	//if (grados > 360) { grados = 0; }
 
 	glutSwapBuffers();
 	glFlush();
@@ -59,6 +72,7 @@ void bezier() {
 	//Luego con estos puntos usamos una matriz de traslacion para transladar los puntos a donde dice bezier
 }
 */
+
 void init(void)
 {
 	/*  select clearing (background) color       */
@@ -88,7 +102,9 @@ void init(void)
  */
 int main(int argc, char** argv)
 {
-	Parser::parse(faces, path);
+	
+	Parser::parse(meshes[0].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\pistol.obj");
+	//Parser::parse(meshes[1].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\bullet.obj");
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -102,7 +118,7 @@ int main(int argc, char** argv)
 	glutIdleFunc(display);
 	glutMainLoop();
 	
-
+	/*
 	for (int i = 0; i < faces.size(); i++) {
 		std::vector <Vertex> vertices = faces[i].vertices;
 		std::cout << "Face: " << i + 1 << " Vertex: ";
@@ -111,6 +127,7 @@ int main(int argc, char** argv)
 		}
 		std::cout << std::endl;
 	}
+	*/
 
 	
 

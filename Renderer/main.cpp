@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <vector>
 #include <random>
+#include <cmath>
 
 #include "Parser.h"
 #include "Mesh.h"
@@ -13,6 +14,19 @@ std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\chango.obj";
 std::vector<Mesh> meshes(2);
 
 float grados = 0;
+float bulletX = 0, bulletY = 0, bulletZ = 0;
+float t = 0.0f;
+float degreeX = 0.00f, degreeY = 0.00f, degreeZ = 0.00f;
+float centerX = -8, centerY = 0, centerZ = 20;
+int frames = 30;
+int count = 0;
+
+
+void bezier();
+
+float rotateX(float degreeX, float x);
+std::vector<float> pistolRecoil(float x, float y, float z);
+
 void display(void)
 {
 	/*  clear all pixels  */
@@ -22,6 +36,7 @@ void display(void)
 	//glRotatef(grados, 1, 1, 1);
 
 	glBegin(GL_TRIANGLES);
+	
 	for (int i = 0; i < meshes[0].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[0].faces[i].vertices;
 
@@ -31,9 +46,13 @@ void display(void)
 		glColor3ub(dist(mt), dist(mt), dist(mt));
 
 		for (int j = 0; j < 3; j++) {
-			glVertex3f(vertices[j].x, vertices[j].y, vertices[j].z);
+			std::vector<float> points = pistolRecoil(vertices[j].x, vertices[j].y, vertices[j].z);
+			//std::cout << "ogX = " << vertices[j].x << " ogY = " << vertices[j].y << " ogZ = " << vertices[j].z << std::endl;
+			//std::cout << "nX = " << points[0] << "nY = " << points[1] << "nZ = " << points[2] << std::endl;
+			glVertex3f(vertices[j].x + (points[0] - vertices[j].x), vertices[j].y + (points[1] - vertices[j].y), vertices[j].z + (points[2] - vertices[j].z));
 		}
 	}
+	
 
 	for (int i = 0; i < meshes[1].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[1].faces[i].vertices;
@@ -44,7 +63,7 @@ void display(void)
 		glColor3ub(dist(mt), dist(mt), dist(mt));
 
 		for (int j = 0; j < 3; j++) {
-			glVertex3f(vertices[j].x, vertices[j].y, vertices[j].z);
+			glVertex3f(vertices[j].x + bulletX, vertices[j].y + bulletY, vertices[j].z + bulletZ);
 		}
 	}
 	glEnd();
@@ -52,26 +71,86 @@ void display(void)
 	//grados += 0.02;
 	//t += 0.00001f;
 	//if (grados > 360) { grados = 0; }
+	bezier();
+	t += 0.01f;
+	if (count < frames) {
+		degreeX += 0.01f;
+		degreeY += 0.01f;
+		degreeZ += 0.01f;
+	}
+	
+	count++;
 
 	glutSwapBuffers();
 	glFlush();
 }
 
-/*
+std::vector<float> pistolRecoil(float x, float y, float z) {
+	float nx = x - centerX;
+	float ny = y - centerY;
+	float nz = z - centerZ;
+
+	x = nx;
+	y = ny;
+	z = nz;
+
+	/*
+	nx = x;
+	ny = (cos(degreeX) * y) - (sin(degreeX) * z);
+	nz = (sin(degreeX) * y) + (cos(degreeX) * z);
+	*/
+
+	/*
+	x = nx;
+	y = ny;
+	z = nz;
+	*/
+
+	/*
+	nx = (cos(degreeY) * x) + (sin(degreeY) * z);
+	ny = y;
+	nz = ( - sin(degreeY) * x) + (cos(degreeY) * z);
+	*/
+	/*
+	x = nx;
+	y = ny;
+	z = nz;
+	*/
+
+	nx = (cos(degreeZ) * x) - (sin(degreeZ) * y);
+	ny = (sin(degreeZ) * x) + (cos(degreeZ) * y);
+	nz = z;
+	
+
+	nx = nx + centerX;
+	ny = ny + centerY;
+	nz = nz + centerZ;
+
+	std::vector<float> points = { nx,ny,nz };
+	return points;
+}
 
 void bezier() {
-	int p1, p2, p3, p4;//En realidad estos solo son los puntos que tenemos, los podemos poner globales
-	float nx, ny, nz;
-	float t = 0.0f;
+	//int p1, p2, p3, p4;//En realidad estos solo son los puntos que tenemos, los podemos poner globales
+	float x0 = 0, x1 = 7, x2 = 10, x3 = 14;
+	float y0 = 0, y1 = -1, y2 = -3, y3 = -5;
+	float z0 = 0, z1 = 0, z2 = 0, z3 = 0;
 
-	nx = pow((t - 1), 2) * p1.x + 3 * (1 - t) * p2.x) + termino + termino; En realidad ponemos la ecuacion real aqui
+	bulletX = pow(1 - t, 3) * x0 + 3 * pow(1 - t, 2) * t * x1 + 3 * (1 - t) * pow(t, 2) * x2 + pow(t, 3) * x3;
+	bulletY = pow(1 - t, 3) * y0 + 3 * pow(1 - t, 2) * t * y1 + 3 * (1 - t) * pow(t, 2) * y2 + pow(t, 3) * y3;
+	bulletZ = pow(1 - t, 3) * z0 + 3 * pow(1 - t, 2) * t * z1 + 3 * (1 - t) * pow(t, 2) * z2 + pow(t, 3) * z3;
+	//nx = pow((t - 1), 2) * p1.x + 3 * (1 - t) * p2.x) + termino + termino; En realidad ponemos la ecuacion real aqui
 	/*ny = pow((t - 1), 2) * p1.y + 3 * (1 - t) * p2.y) + termino + termino;En realidad ponemos la ecuacion real aqui
 	/*nz = pow((t - 1), 2) * p1.z + 3 * (1 - t) * p2.z)+ termino + termino;En realidad ponemos la ecuacion real aqui
 
 	//luego regresamos y etc.  El punto es calcular cada punto de los que generan la curva de bezier. 
-	//Luego con estos puntos usamos una matriz de traslacion para transladar los puntos a donde dice bezier
+	//Luego con estos puntos usamos una matriz de traslacion para transladar los puntos a donde dice bezier*/
 }
-*/
+
+float pistolX = 0, pistolY = 0, pistolZ = 0;
+
+
+
 
 void init(void)
 {
@@ -104,7 +183,7 @@ int main(int argc, char** argv)
 {
 	
 	Parser::parse(meshes[0].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\pistol.obj");
-	//Parser::parse(meshes[1].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\bullet.obj");
+	Parser::parse(meshes[1].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\bullet.obj");
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);

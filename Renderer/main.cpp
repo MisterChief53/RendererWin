@@ -17,7 +17,7 @@ float grados = 0;
 float bulletX = 0, bulletY = 0, bulletZ = 0;
 float t = 0.0f;
 float degreeX = 0.00f, degreeY = 0.00f, degreeZ = 0.00f;
-float centerX = -8, centerY = 0, centerZ = 20;
+float centerX = -8, centerY = -10, centerZ = 20;
 int frames = 30;
 int count = 0;
 
@@ -40,15 +40,10 @@ void display(void)
 	for (int i = 0; i < meshes[0].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[0].faces[i].vertices;
 
-		std::random_device rd;
-		std::mt19937 mt(rd());
-		std::uniform_int_distribution<int> dist(100, 255);
-		glColor3ub(dist(mt), dist(mt), dist(mt));
+		glColor3ub(255, 10, 10);
 
 		for (int j = 0; j < 3; j++) {
 			std::vector<float> points = pistolRecoil(vertices[j].x, vertices[j].y, vertices[j].z);
-			//std::cout << "ogX = " << vertices[j].x << " ogY = " << vertices[j].y << " ogZ = " << vertices[j].z << std::endl;
-			//std::cout << "nX = " << points[0] << "nY = " << points[1] << "nZ = " << points[2] << std::endl;
 			glVertex3f(vertices[j].x + (points[0] - vertices[j].x), vertices[j].y + (points[1] - vertices[j].y), vertices[j].z + (points[2] - vertices[j].z));
 		}
 	}
@@ -57,25 +52,21 @@ void display(void)
 	for (int i = 0; i < meshes[1].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[1].faces[i].vertices;
 
-		std::random_device rd;
-		std::mt19937 mt(rd());
-		std::uniform_int_distribution<int> dist(100, 255);
-		glColor3ub(dist(mt), dist(mt), dist(mt));
-
+		glColor3ub(10, 255, 10);
 		for (int j = 0; j < 3; j++) {
 			glVertex3f(vertices[j].x + bulletX, vertices[j].y + bulletY, vertices[j].z + bulletZ);
 		}
 	}
 	glEnd();
 
-	//grados += 0.02;
-	//t += 0.00001f;
-	//if (grados > 360) { grados = 0; }
 	bezier();
-	t += 0.01f;
+	if (t <= 0.9) {
+		t += 0.01f;
+	}
+
 	if (count < frames) {
-		degreeX += 0.01f;
-		degreeY += 0.01f;
+		//degreeX += 0.01f;
+		//degreeY += 0.01f;
 		degreeZ += 0.01f;
 	}
 	
@@ -84,6 +75,14 @@ void display(void)
 	glutSwapBuffers();
 	glFlush();
 }
+
+void flatShading(std::vector <Vertex> vertices, float& factor) {
+	for (int i = 0; i < vertices.size(); i++) {
+
+	}
+}
+
+
 
 std::vector<float> pistolRecoil(float x, float y, float z) {
 	float nx = x - centerX;
@@ -94,28 +93,28 @@ std::vector<float> pistolRecoil(float x, float y, float z) {
 	y = ny;
 	z = nz;
 
-	/*
+	
 	nx = x;
 	ny = (cos(degreeX) * y) - (sin(degreeX) * z);
 	nz = (sin(degreeX) * y) + (cos(degreeX) * z);
-	*/
+	
 
-	/*
+	
 	x = nx;
 	y = ny;
 	z = nz;
-	*/
+	
 
-	/*
+	
 	nx = (cos(degreeY) * x) + (sin(degreeY) * z);
 	ny = y;
 	nz = ( - sin(degreeY) * x) + (cos(degreeY) * z);
-	*/
-	/*
+	
+	
 	x = nx;
 	y = ny;
 	z = nz;
-	*/
+	
 
 	nx = (cos(degreeZ) * x) - (sin(degreeZ) * y);
 	ny = (sin(degreeZ) * x) + (cos(degreeZ) * y);
@@ -139,12 +138,6 @@ void bezier() {
 	bulletX = pow(1 - t, 3) * x0 + 3 * pow(1 - t, 2) * t * x1 + 3 * (1 - t) * pow(t, 2) * x2 + pow(t, 3) * x3;
 	bulletY = pow(1 - t, 3) * y0 + 3 * pow(1 - t, 2) * t * y1 + 3 * (1 - t) * pow(t, 2) * y2 + pow(t, 3) * y3;
 	bulletZ = pow(1 - t, 3) * z0 + 3 * pow(1 - t, 2) * t * z1 + 3 * (1 - t) * pow(t, 2) * z2 + pow(t, 3) * z3;
-	//nx = pow((t - 1), 2) * p1.x + 3 * (1 - t) * p2.x) + termino + termino; En realidad ponemos la ecuacion real aqui
-	/*ny = pow((t - 1), 2) * p1.y + 3 * (1 - t) * p2.y) + termino + termino;En realidad ponemos la ecuacion real aqui
-	/*nz = pow((t - 1), 2) * p1.z + 3 * (1 - t) * p2.z)+ termino + termino;En realidad ponemos la ecuacion real aqui
-
-	//luego regresamos y etc.  El punto es calcular cada punto de los que generan la curva de bezier. 
-	//Luego con estos puntos usamos una matriz de traslacion para transladar los puntos a donde dice bezier*/
 }
 
 float pistolX = 0, pistolY = 0, pistolZ = 0;
@@ -164,12 +157,12 @@ void init(void)
 	//glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 	gluPerspective(45.0, 800/600, 0.1, 100.0);
 	//gluOrtho2D(0.0, 1.0, 0.0, 1.0);
-
+	
 	
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 20.0, 0.0, 1.0, 0.0);
+	gluLookAt(0.0, 0.0, -10.0, 0.0, 0.0, 20.0, 0.0, 1.0, 0.0);
 }
 
 /*

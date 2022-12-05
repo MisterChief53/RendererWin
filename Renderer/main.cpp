@@ -11,7 +11,7 @@
 #include "Mesh.h"
 std::vector<Face> faces;
 std::string path = "C:\\Users\\soder\\OneDrive\\Documentos\\chango.obj";
-std::vector<Mesh> meshes(2);
+std::vector<Mesh> meshes(4);
 
 float grados = 0;
 float bulletX = 0, bulletY = 0, bulletZ = 0;
@@ -21,14 +21,16 @@ float centerX = -8, centerY = -10, centerZ = 20;
 int frames = 30;
 int count = 0;
 
-
 void bezier();
+Vertex calculaNormales(std::vector<Vertex> vertices);
+float calculaFactor(Vertex normal, Vertex normalFoco);
 
 float rotateX(float degreeX, float x);
 std::vector<float> pistolRecoil(float x, float y, float z);
 
 void display(void)
 {
+
 	/*  clear all pixels  */
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -36,25 +38,73 @@ void display(void)
 	//glRotatef(grados, 1, 1, 1);
 
 	glBegin(GL_TRIANGLES);
+
+	Vertex focoVector;
+	focoVector.x = 0.802;
+	focoVector.y = 0.267;
+	focoVector.z = -0.534;
 	
+	float pistolFactor = 1;
 	for (int i = 0; i < meshes[0].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[0].faces[i].vertices;
-
-		glColor3ub(255, 10, 10);
+		std::vector <Vertex> tempVertices;
+		Vertex tempVertex;
 
 		for (int j = 0; j < 3; j++) {
 			std::vector<float> points = pistolRecoil(vertices[j].x, vertices[j].y, vertices[j].z);
-			glVertex3f(vertices[j].x + (points[0] - vertices[j].x), vertices[j].y + (points[1] - vertices[j].y), vertices[j].z + (points[2] - vertices[j].z));
+
+			tempVertex.x = vertices[j].x + (points[0] - vertices[j].x);
+			tempVertex.y = vertices[j].y + (points[1] - vertices[j].y);
+			tempVertex.z = vertices[j].z + (points[2] - vertices[j].z);
+			tempVertices.push_back(tempVertex);
 		}
+
+		for (int j = 0; j < 3; j++) {
+			Vertex normal = calculaNormales(tempVertices);
+			pistolFactor = calculaFactor(normal, focoVector);
+
+			glColor3ub(80 * pistolFactor, 80 * pistolFactor, 80 * pistolFactor);
+
+			glVertex3f(tempVertices[j].x, tempVertices[j].y, tempVertices[j].z);
+		}
+
 	}
 	
 
 	for (int i = 0; i < meshes[1].faces.size(); i++) {
 		std::vector <Vertex> vertices = meshes[1].faces[i].vertices;
+		std::vector <Vertex> tempVertices;
+		Vertex tempVertex;
 
-		glColor3ub(10, 255, 10);
+		
+
+		
 		for (int j = 0; j < 3; j++) {
-			glVertex3f(vertices[j].x + bulletX, vertices[j].y + bulletY, vertices[j].z + bulletZ);
+			tempVertex.x = vertices[j].x + bulletX;
+			tempVertex.y = vertices[j].y + bulletY;
+			tempVertex.z = vertices[j].z + bulletZ;
+			tempVertices.push_back(tempVertex);
+		}
+		for (int j = 0; j < 3; j++) {
+			Vertex normal = calculaNormales(tempVertices);
+			float factor = calculaFactor(normal, focoVector);
+
+			glColor3ub(10 * factor, 255 * factor, 10 * factor);
+
+			glVertex3f(tempVertices[j].x, tempVertices[j].y, tempVertices[j].z);
+		}
+	}
+
+	for (int i = 0; i < meshes[2].faces.size(); i++) {
+		std::vector <Vertex> vertices = meshes[2].faces[i].vertices;
+
+		for (int j = 0; j < 3; j++) {
+			Vertex normal = calculaNormales(vertices);
+			float factor = calculaFactor(normal, focoVector);
+
+			glColor3ub(50 * factor, 55 * factor, 50 * factor);
+
+			glVertex3f(vertices[j].x, vertices[j].y, vertices[j].z);
 		}
 	}
 	glEnd();
@@ -76,10 +126,43 @@ void display(void)
 	glFlush();
 }
 
-void flatShading(std::vector <Vertex> vertices, float& factor) {
-	for (int i = 0; i < vertices.size(); i++) {
 
-	}
+
+Vertex calculaNormales(std::vector<Vertex> vertices) {
+	Vertex normal;
+	Vertex normalized;
+	Vertex va, vb, vc;
+
+	va.x = vertices[1].x - vertices[0].x;
+	va.y = vertices[1].y - vertices[0].y;
+	va.z = vertices[1].z - vertices[0].z;
+
+	vb.x = vertices[2].x - vertices[1].x;
+	vb.y = vertices[2].y - vertices[1].y;
+	vb.z = vertices[2].z - vertices[1].z;
+
+	normal.x = va.y * vb.z - va.z * vb.y;
+	normal.y = va.z * vb.x - va.x * vb.z;
+	normal.z = va.x * vb.y - va.y * vb.x;
+
+
+	float magnitude = sqrt(normal.x * normal.x +
+		normal.y * normal.y +
+		normal.z * normal.z);
+
+	normalized.x = normal.x / magnitude;
+	normalized.y = normal.y / magnitude;
+	normalized.z = normal.z / magnitude;
+
+	return normalized;
+}
+
+float calculaFactor(Vertex normal, Vertex normalFoco) {
+	float prodPunto = normal.x * normalFoco.x + normal.y * normalFoco.y + normal.z * normalFoco.z;
+	//return acos(prodPunto);
+	float max = 1;
+	float min = 0;
+	return std::clamp(prodPunto, min, max);
 }
 
 
@@ -177,6 +260,9 @@ int main(int argc, char** argv)
 	
 	Parser::parse(meshes[0].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\pistol.obj");
 	Parser::parse(meshes[1].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\bullet.obj");
+	Parser::parse(meshes[2].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\plane1.obj");
+	Parser::parse(meshes[3].faces, "C:\\Users\\soder\\OneDrive\\Documentos\\plane2.obj");
+
 	
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
@@ -188,6 +274,7 @@ int main(int argc, char** argv)
 	glDepthFunc(GL_LESS);
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
+
 	glutMainLoop();
 	
 	/*

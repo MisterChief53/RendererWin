@@ -21,6 +21,13 @@ float centerX = -8, centerY = -10, centerZ = 20;
 int frames = 30;
 int count = 0;
 
+
+float camX = 0.0;
+float camY = 0.0;
+float camZ = 0.0;
+
+
+
 void bezier();
 Vertex calculaNormales(std::vector<Vertex> vertices);
 float calculaFactor(Vertex normal, Vertex normalFoco);
@@ -225,9 +232,6 @@ void bezier() {
 
 float pistolX = 0, pistolY = 0, pistolZ = 0;
 
-
-
-
 void init(void)
 {
 	/*  select clearing (background) color       */
@@ -235,7 +239,7 @@ void init(void)
 
 	/*  initialize viewing values  */
 	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
+	glLoadIdentity();		
 
 	//glOrtho(0.0, 1.0, 0.0, 1.0, -1.0, 1.0);
 	gluPerspective(45.0, 800/600, 0.1, 100.0);
@@ -245,7 +249,18 @@ void init(void)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	gluLookAt(0.0, 0.0, -10.0, 0.0, 0.0, 20.0, 0.0, 1.0, 0.0);
+	//gluLookAt(0.0, 0.0, -10.0, 0.0, 0.0, 20.0, 0.0, 1.0, 0.0);
+	gluLookAt(0.0, 0.0, -10.0, 0.0 , 0.0 , 20.0, 0.0, 1.0, 0.0);
+}
+
+void moveKey(unsigned char key, int xx, int yy) {
+	if (key == 'a') {
+		degreeX = 0.0;
+		t = 0.0;
+		count = 0.0;
+		degreeZ = 0.0;
+	}
+	glutPostRedisplay();
 }
 
 /*
@@ -272,6 +287,7 @@ int main(int argc, char** argv)
 	init();
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
+	glutKeyboardFunc(moveKey);
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
 
@@ -287,6 +303,7 @@ int main(int argc, char** argv)
 		std::cout << std::endl;
 	}
 	*/
+
 
 	
 
